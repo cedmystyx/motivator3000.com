@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title>Exemple de scène A-Frame fonctionnelle</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Motivator 3D Viewer</title>
+    <meta name="viewport" content="width=800, initial-scale=1.0">
+    <!-- A-Frame core -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Optionally, add environment component for background -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
     <style>
-      html, body { height: 100%; margin: 0; overflow: hidden; background: #181818; }
-      a-scene { width: 100vw; height: 100vh; }
+        body { background: #222; margin: 0; }
+        #sceneContainer { width: 800px; height: 450px; margin: 40px auto; }
     </style>
-    <!-- Composant pour mains et bras glowing/pulsant -->
+    <!-- Composants pour mains et bras glowing/pulsant -->
     <script>
-      // Sphère glowing/pulsante pour la main et le bras
       AFRAME.registerComponent('attractive-appendage', {
         schema: {
           color: {type: 'color', default: '#00FFF0'},
@@ -20,7 +21,6 @@
           armLength: {type: 'number', default: 0.45}
         },
         init: function () {
-          // Main : sphère glowing
           this.el.setAttribute('geometry', {
             primitive: 'sphere',
             radius: 0.11
@@ -36,8 +36,6 @@
             opacity: 0.97
           });
           this.pulse = 0;
-
-          // Bras attaché à la main
           if (this.data.arm) {
             this.armEntity = document.createElement('a-cylinder');
             this.armEntity.setAttribute('radius', 0.09);
@@ -112,47 +110,50 @@
         }
       });
     </script>
-  </head>
-  <body>
-    <a-scene
-      environment="preset: forest; shadow: true;"
-      shadow="type: pcfsoft"
-      renderer="antialias: true"
-      vr-mode-ui="enabled: true"
-      device-orientation-permission-ui="enabled: true"
-    >
-      <a-assets>
-        <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
-      </a-assets>
-
-      <!-- Objet motivator3000 animé, échelle/position/rotation précises -->
-      <a-entity
-        gltf-model="#motivator-gltf"
-        scale="5 5 5"
-        position="0 1.66025 1.5678"
-        rotation="89.99963750135457 0 0"
-        shadow
-        animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
-      ></a-entity>
-
-      <!-- Lumière directionnelle -->
-      <a-light type="directional" intensity="1.2" position="1 6 2" castShadow="true"></a-light>
-      <!-- Caméra contrôlable multiplateforme -->
-      <a-entity camera position="0 1.6 5" look-controls orbit-controls="target: 0 1 0"></a-entity>
-      
-      <!-- Mains VR attractives avec bras -->
-      <a-entity
-        laser-controls="hand: left"
-        attractive-appendage="color: #00fff0; arm: true"
-        attach-arm-to-shoulder="side: left"
-        shadow="cast: true"
-      ></a-entity>
-      <a-entity
-        laser-controls="hand: right"
-        attractive-appendage="color: #ff3cfb; arm: true"
-        attach-arm-to-shoulder="side: right"
-        shadow="cast: true"
-      ></a-entity>
-    </a-scene>
-  </body>
+</head>
+<body>
+    <div id="sceneContainer">
+        <a-scene 
+          embedded 
+          environment="preset: forest; shadow: true; width: 800px; height: 450px;"
+        >
+            <a-assets>
+                <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
+                <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
+            </a-assets>
+            <!-- GLTF à jour, grand et bien placé -->
+            <a-entity 
+                gltf-model="#motivator-gltf"
+                scale="5 5 5"
+                position="0 1.66025 1.5678"
+                rotation="89.99963750135457 0 0"
+                shadow="cast: true; receive: true"
+                animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
+            ></a-entity>
+            <a-light 
+                type="point"
+                position="1 3 2"
+                intensity="1"
+                color="#ffffff"
+                castShadow="true">
+            </a-light>
+            <a-entity camera 
+                orbit-controls="target: 0 1 0; minDistance: 1; maxDistance: 10; initialPosition: 0 2 5;">
+            </a-entity>
+            <!-- Mains VR attractives avec bras -->
+            <a-entity
+              laser-controls="hand: left"
+              attractive-appendage="color: #00fff0; arm: true"
+              attach-arm-to-shoulder="side: left"
+              shadow="cast: true"
+            ></a-entity>
+            <a-entity
+              laser-controls="hand: right"
+              attractive-appendage="color: #ff3cfb; arm: true"
+              attach-arm-to-shoulder="side: right"
+              shadow="cast: true"
+            ></a-entity>
+        </a-scene>
+    </div>
+</body>
 </html>
