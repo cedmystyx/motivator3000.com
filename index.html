@@ -10,31 +10,54 @@
         body { background: #222; margin: 0; }
         #sceneContainer { width: 800px; height: 450px; margin: 40px auto; }
     </style>
+    <!-- Lumière orbitale -->
     <script>
-      // Script pour changer de gesture selon les boutons du contrôleur
+      AFRAME.registerComponent('orbit-light', {
+        schema: {
+          radius: {type: 'number', default: 3},
+          height: {type: 'number', default: 2},
+          speed: {type: 'number', default: 0.5},
+          target: {type: 'selector', default: null}
+        },
+        tick: function(time, delta) {
+          var t = time / 1000 * this.data.speed;
+          var x = Math.cos(t) * this.data.radius;
+          var z = Math.sin(t) * this.data.radius;
+          var y = this.data.height;
+          var ox = 0, oy = 0, oz = 0;
+          if (this.data.target) {
+            var pos = this.data.target.object3D.position;
+            ox = pos.x; oy = pos.y; oz = pos.z;
+          }
+          this.el.object3D.position.set(ox + x, oy + y, oz + z);
+          this.el.object3D.lookAt(new THREE.Vector3(ox, oy + 1, oz));
+        }
+      });
+    </script>
+    <!-- Changement de pose des mains via boutons -->
+    <script>
       AFRAME.registerComponent('gesture-switcher', {
         schema: {
           hand: {type: 'string', default: 'left'}
         },
         init: function () {
-          this.currentGesture = 'open';
           this.gestures = ['open','fist','point','pistol','thumbUp'];
           this.gestureIndex = 0;
           this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: open`);
-          // Pour la démo, on change de gesture à chaque pression du bouton trigger
           this.onButtonDown = this.onButtonDown.bind(this);
+          // Ajoute tous les boutons connus pour VR
           this.el.addEventListener('abuttondown', this.onButtonDown);
           this.el.addEventListener('bbuttondown', this.onButtonDown);
           this.el.addEventListener('xbuttondown', this.onButtonDown);
           this.el.addEventListener('ybuttondown', this.onButtonDown);
           this.el.addEventListener('triggerdown', this.onButtonDown);
           this.el.addEventListener('gripdown', this.onButtonDown);
+          this.el.addEventListener('trackpaddown', this.onButtonDown);
+          this.el.addEventListener('thumbstickdown', this.onButtonDown);
         },
         onButtonDown: function () {
-          // Passe à la gesture suivante dans la liste
           this.gestureIndex = (this.gestureIndex + 1) % this.gestures.length;
-          this.currentGesture = this.gestures[this.gestureIndex];
-          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: ${this.currentGesture}`);
+          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: ${this.gestures[this.gestureIndex]}`);
         }
       });
     </script>
@@ -49,7 +72,9 @@
                 <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
                 <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
             </a-assets>
+            <!-- GLTF à jour, grand et bien placé -->
             <a-entity 
+                id="gltfmodel"
                 gltf-model="#motivator-gltf"
                 scale="5 5 5"
                 position="0 1.66025 1.5678"
@@ -57,6 +82,12 @@
                 shadow="cast: true; receive: true"
                 animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
             ></a-entity>
+            
+            <!-- Lumière qui tourne autour du GLTF -->
+            <a-entity orbit-light="radius: 3; height: 2; speed: 0.4; target: #gltfmodel">
+              <a-light type="spot" intensity="1.2" angle="45" penumbra="0.6" color="#fff" castShadow="true"></a-light>
+            </a-entity>
+            
             <a-light 
                 type="point"
                 position="1 3 2"
@@ -67,7 +98,8 @@
             <a-entity camera 
                 orbit-controls="target: 0 1 0; minDistance: 1; maxDistance: 10; initialPosition: 0 2 5;">
             </a-entity>
-            <!-- Mains humaines classiques WebXR contrôlées par les boutons -->
+            
+            <!-- Mains humaines VR contrôlées par boutons -->
             <a-entity gesture-switcher="hand: left"></a-entity>
             <a-entity gesture-switcher="hand: right"></a-entity>
         </a-scene>
