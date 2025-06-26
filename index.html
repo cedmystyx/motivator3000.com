@@ -2,13 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Motivator 3D - Vue 16/9 avec lumière animée</title>
-    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Motivator 3D - Grand écran, objet flottant</title>
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
     <style>
         body { background: #181818; margin: 0; }
-        #sceneContainer { width: 960px; height: 540px; margin: 40px auto; }
+        #sceneContainer { width: 1280px; height: 720px; margin: 40px auto; }
     </style>
 </head>
 <body>
@@ -24,25 +24,25 @@
             <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
         </a-assets>
 
-        <!-- Modèle 3D, centré, taille adaptée -->
+        <!-- Modèle 3D flottant avec animation -->
         <a-entity
             gltf-model="#motivator-gltf"
-            scale="1.2 1.2 1.2"
-            position="0 1 0"
+            scale="1.6 1.6 1.6"
+            position="0 1.5 0"
             shadow="cast: true; receive: true"
+            animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 0; to: 0 2 0; loop: true"
         ></a-entity>
 
-        <!-- Lumière tournant autour de l'objet -->
-        <a-entity id="rotating-light" position="0 2 3" rotation="0 0 0">
+        <!-- Lumière tournante -->
+        <a-entity id="rotating-light" position="0 2.5 3" rotation="0 0 0">
             <a-light
                 type="point"
                 intensity="1.2"
                 color="#fffbe6"
                 castShadow="true"
-                distance="20"
+                distance="24"
                 decay="2"
             ></a-light>
-            <!-- Animation de rotation autour de l'objet -->
             <a-animation
                 attribute="rotation"
                 dur="6000"
@@ -52,12 +52,12 @@
             ></a-animation>
         </a-entity>
 
-        <!-- Caméra : vue de face, look-controls activé, orbit-controls pour tourner autour -->
+        <!-- Caméra : vue de face, look-controls activé, orbit-controls autorisé -->
         <a-entity
             camera
-            position="0 1.2 4"
+            position="0 1.7 5"
             look-controls="enabled: true"
-            orbit-controls="target: 0 1 0; minDistance: 2; maxDistance: 8; initialPosition: 0 1.2 4; enableDamping: true; dampingFactor: 0.07; rotateSpeed:0.4"
+            orbit-controls="target: 0 1.7 0; minDistance: 3; maxDistance: 10; initialPosition: 0 1.7 5; enableDamping: true; dampingFactor: 0.08; rotateSpeed:0.4"
         ></a-entity>
     </a-scene>
 </div>
