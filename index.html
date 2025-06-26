@@ -2,34 +2,56 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Motivator 3D - Gaming Environnement</title>
-    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <title>Motivator 3D - Gaming Environnement Multiplateforme</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- Composant environment -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
     <style>
-        body { background: #181818; margin: 0; }
-        #sceneContainer { width: 1280px; height: 720px; margin: 40px auto; }
-        a-scene { width: 100%; height: 100%; }
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: #181818;
+            overflow: hidden;
+        }
+        #sceneContainer {
+            width: 100vw;
+            height: 100vh;
+            min-height: 360px;
+            min-width: 320px;
+            max-width: 100vw;
+            max-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        a-scene {
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 360px;
+            min-width: 320px;
+        }
     </style>
 </head>
 <body>
 <div id="sceneContainer">
     <a-scene
         embedded
-        environment="preset: tron; shadow: true;"
+        environment="preset: gaming; shadow: true;"
         shadow="type: pcfsoft"
         renderer="antialias: true"
+        vr-mode-ui="enabled: true"
+        device-orientation-permission-ui="enabled: true"
     >
         <a-assets>
             <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
             <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
         </a-assets>
 
-        <!-- Objet 3D flottant (animation Y) -->
+        <!-- Objet 3D flottant avec animation verticale -->
         <a-entity
             gltf-model="#motivator-gltf"
-            scale="1.6 1.6 1.6"
+            scale="1.3 1.3 1.3"
             position="0 1.5 0"
             shadow="cast: true; receive: true"
             animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 0; to: 0 2 0; loop: true"
@@ -54,11 +76,11 @@
             ></a-animation>
         </a-entity>
 
-        <!-- Caméra avec look-controls et orbit-controls -->
+        <!-- Caméra compatible desktop/mobile/VR -->
         <a-entity
             camera
             position="0 1.7 5"
-            look-controls="enabled: true"
+            look-controls="enabled: true; touchEnabled: true; mouseEnabled: true"
             orbit-controls="target: 0 1.7 0; minDistance: 3; maxDistance: 10; initialPosition: 0 1.7 5; enableDamping: true; dampingFactor: 0.08; rotateSpeed:0.4"
         ></a-entity>
     </a-scene>
