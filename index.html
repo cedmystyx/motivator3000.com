@@ -34,45 +34,18 @@
         }
       });
     </script>
-    <!-- Changement de pose des mains via boutons -->
-    <script>
-      AFRAME.registerComponent('gesture-switcher', {
-        schema: {
-          hand: {type: 'string', default: 'left'}
-        },
-        init: function () {
-          this.gestures = ['open','fist','point','pistol','thumbUp'];
-          this.gestureIndex = 0;
-          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: open`);
-          this.onButtonDown = this.onButtonDown.bind(this);
-          // Ajoute tous les boutons connus pour VR
-          this.el.addEventListener('abuttondown', this.onButtonDown);
-          this.el.addEventListener('bbuttondown', this.onButtonDown);
-          this.el.addEventListener('xbuttondown', this.onButtonDown);
-          this.el.addEventListener('ybuttondown', this.onButtonDown);
-          this.el.addEventListener('triggerdown', this.onButtonDown);
-          this.el.addEventListener('gripdown', this.onButtonDown);
-          this.el.addEventListener('trackpaddown', this.onButtonDown);
-          this.el.addEventListener('thumbstickdown', this.onButtonDown);
-        },
-        onButtonDown: function () {
-          this.gestureIndex = (this.gestureIndex + 1) % this.gestures.length;
-          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: ${this.gestures[this.gestureIndex]}`);
-        }
-      });
-    </script>
 </head>
 <body>
     <div id="sceneContainer">
         <a-scene 
-          embedded 
+          embedded
           environment="preset: forest; shadow: true; width: 800px; height: 450px;"
         >
             <a-assets>
                 <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
                 <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
             </a-assets>
-            <!-- GLTF à jour, grand et bien placé -->
+            <!-- GLTF animé et centré -->
             <a-entity 
                 id="gltfmodel"
                 gltf-model="#motivator-gltf"
@@ -82,12 +55,11 @@
                 shadow="cast: true; receive: true"
                 animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
             ></a-entity>
-            
-            <!-- Lumière qui tourne autour du GLTF -->
+            <!-- Lumière qui tourne autour du modèle -->
             <a-entity orbit-light="radius: 3; height: 2; speed: 0.4; target: #gltfmodel">
               <a-light type="spot" intensity="1.2" angle="45" penumbra="0.6" color="#fff" castShadow="true"></a-light>
             </a-entity>
-            
+            <!-- Lumière d'ambiance fixe -->
             <a-light 
                 type="point"
                 position="1 3 2"
@@ -95,13 +67,35 @@
                 color="#ffffff"
                 castShadow="true">
             </a-light>
+            <!-- Camera orbitale -->
             <a-entity camera 
                 orbit-controls="target: 0 1 0; minDistance: 1; maxDistance: 10; initialPosition: 0 2 5;">
             </a-entity>
-            
-            <!-- Mains humaines VR contrôlées par boutons -->
-            <a-entity gesture-switcher="hand: left"></a-entity>
-            <a-entity gesture-switcher="hand: right"></a-entity>
+
+            <!-- Main gauche VR -->
+            <a-entity hand-controls="hand: left" 
+                      oculus-touch-controls="hand: left"
+                      vive-controls="hand: left"
+                      windows-motion-controls="hand: left"
+                      daydream-controls="hand: left"
+                      gearvr-controls="hand: left"
+                      magic-leap-controls="hand: left"
+                      valve-index-controls="hand: left"
+                      oculus-go-controls="hand: left"
+                      shadow="cast: true"
+            ></a-entity>
+            <!-- Main droite VR -->
+            <a-entity hand-controls="hand: right" 
+                      oculus-touch-controls="hand: right"
+                      vive-controls="hand: right"
+                      windows-motion-controls="hand: right"
+                      daydream-controls="hand: right"
+                      gearvr-controls="hand: right"
+                      magic-leap-controls="hand: right"
+                      valve-index-controls="hand: right"
+                      oculus-go-controls="hand: right"
+                      shadow="cast: true"
+            ></a-entity>
         </a-scene>
     </div>
 </body>
