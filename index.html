@@ -5,10 +5,12 @@
     <title>Motivator 3D - Gaming Environnement</title>
     <meta name="viewport" content="width=1280, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Composant environment -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
     <style>
         body { background: #181818; margin: 0; }
         #sceneContainer { width: 1280px; height: 720px; margin: 40px auto; }
+        a-scene { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -24,7 +26,7 @@
             <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
         </a-assets>
 
-        <!-- Objet 3D flottant -->
+        <!-- Objet 3D flottant (animation Y) -->
         <a-entity
             gltf-model="#motivator-gltf"
             scale="1.6 1.6 1.6"
@@ -33,7 +35,7 @@
             animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 0; to: 0 2 0; loop: true"
         ></a-entity>
 
-        <!-- Lumière tournante -->
+        <!-- Lumière tournante autour de l'objet -->
         <a-entity id="rotating-light" position="0 2.5 3" rotation="0 0 0">
             <a-light
                 type="point"
@@ -52,7 +54,7 @@
             ></a-animation>
         </a-entity>
 
-        <!-- Caméra : look-controls et orbit-controls -->
+        <!-- Caméra avec look-controls et orbit-controls -->
         <a-entity
             camera
             position="0 1.7 5"
