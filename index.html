@@ -11,37 +11,30 @@
         #sceneContainer { width: 800px; height: 450px; margin: 40px auto; }
     </style>
     <script>
-      AFRAME.registerComponent('glowing-hand', {
+      // Script pour changer de gesture selon les boutons du contrôleur
+      AFRAME.registerComponent('gesture-switcher', {
         schema: {
-          color: {type: 'color', default: '#00FFF0'}
+          hand: {type: 'string', default: 'left'}
         },
         init: function () {
-          this.el.setAttribute('geometry', {
-            primitive: 'sphere',
-            radius: 0.11
-          });
-          this.el.setAttribute('material', {
-            color: this.data.color,
-            emissive: this.data.color,
-            emissiveIntensity: 0.8,
-            roughness: 0.3,
-            metalness: 0.7,
-            shader: 'standard',
-            transparent: true,
-            opacity: 0.97
-          });
-          this.pulse = 0;
+          this.currentGesture = 'open';
+          this.gestures = ['open','fist','point','pistol','thumbUp'];
+          this.gestureIndex = 0;
+          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: open`);
+          // Pour la démo, on change de gesture à chaque pression du bouton trigger
+          this.onButtonDown = this.onButtonDown.bind(this);
+          this.el.addEventListener('abuttondown', this.onButtonDown);
+          this.el.addEventListener('bbuttondown', this.onButtonDown);
+          this.el.addEventListener('xbuttondown', this.onButtonDown);
+          this.el.addEventListener('ybuttondown', this.onButtonDown);
+          this.el.addEventListener('triggerdown', this.onButtonDown);
+          this.el.addEventListener('gripdown', this.onButtonDown);
         },
-        tick: function (time, delta) {
-          this.pulse += delta * 0.002;
-          var scale = 1 + 0.2 * Math.sin(this.pulse * 2);
-          this.el.object3D.scale.set(scale, scale, scale);
-
-          var mat = this.el.getObject3D('mesh')?.material;
-          if (mat) {
-            mat.emissiveIntensity = 0.7 + 0.35 * Math.abs(Math.sin(this.pulse));
-            mat.opacity = 0.8 + 0.17 * Math.abs(Math.cos(this.pulse * 1.3));
-          }
+        onButtonDown: function () {
+          // Passe à la gesture suivante dans la liste
+          this.gestureIndex = (this.gestureIndex + 1) % this.gestures.length;
+          this.currentGesture = this.gestures[this.gestureIndex];
+          this.el.setAttribute('hand-controls', `hand: ${this.data.hand}; handModelStyle: mesh; gesture: ${this.currentGesture}`);
         }
       });
     </script>
@@ -74,17 +67,9 @@
             <a-entity camera 
                 orbit-controls="target: 0 1 0; minDistance: 1; maxDistance: 10; initialPosition: 0 2 5;">
             </a-entity>
-            <!-- Mains VR glowing/pulsantes SANS bras, SANS modèle contrôleur -->
-            <a-entity
-              laser-controls="hand: left; model: false"
-              glowing-hand="color: #00fff0"
-              shadow="cast: true"
-            ></a-entity>
-            <a-entity
-              laser-controls="hand: right; model: false"
-              glowing-hand="color: #ff3cfb"
-              shadow="cast: true"
-            ></a-entity>
+            <!-- Mains humaines classiques WebXR contrôlées par les boutons -->
+            <a-entity gesture-switcher="hand: left"></a-entity>
+            <a-entity gesture-switcher="hand: right"></a-entity>
         </a-scene>
     </div>
 </body>
