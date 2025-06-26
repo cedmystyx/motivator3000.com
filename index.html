@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <title>Motivator 3000 VR Scene</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <!-- A-Frame et environnement immersif -->
+  <!-- A-Frame et composant d'environnement immersif -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
   <style>
     html, body { height: 100%; width: 100%; margin: 0; background: #181818; overflow: hidden; }
     a-scene { width: 100vw; height: 100vh; }
   </style>
-  <!-- Composants personnalisés pour mains et bras attractifs -->
+  <!-- Composants pour main & bras attractifs -->
   <script>
-    // Sphère glowing/pulsante pour la main et le bras
+    // Mains et bras glowing/pulsant
     AFRAME.registerComponent('attractive-appendage', {
       schema: {
         color: {type: 'color', default: '#00FFF0'},
@@ -21,7 +21,7 @@
         armLength: {type: 'number', default: 0.45}
       },
       init: function () {
-        // Main : sphère glowing
+        // Main sphère glowing
         this.el.setAttribute('geometry', {
           primitive: 'sphere',
           radius: 0.11
@@ -38,7 +38,7 @@
         });
         this.pulse = 0;
 
-        // Bras : cylindre glowing, attaché à la main
+        // Bras glowing attaché à la main
         if (this.data.arm) {
           this.armEntity = document.createElement('a-cylinder');
           this.armEntity.setAttribute('radius', 0.09);
@@ -53,13 +53,12 @@
             transparent: true,
             opacity: 0.95
           });
-          // Placement initial du bras (sera mis à jour dynamiquement)
           this.armEntity.setAttribute('position', `0 ${-this.data.armLength/2} 0`);
           this.el.appendChild(this.armEntity);
         }
       },
       tick: function (time, delta) {
-        // Effet pulsant (taille, intensité emissive, opacité)
+        // Effet pulsant main+bras
         this.pulse += delta * 0.002;
         var scale = 1 + 0.2 * Math.sin(this.pulse * 2);
         this.el.object3D.scale.set(scale, scale, scale);
@@ -79,26 +78,23 @@
       }
     });
 
-    // Bras dynamique qui part de l'épaule (relatif caméra) vers la main VR/WebXR
+    // Bras dynamique qui part de l'épaule vers la main
     AFRAME.registerComponent('attach-arm-to-shoulder', {
       schema: {
         side: {type: 'string', default: 'left'} // 'left' ou 'right'
       },
       init: function () {
-        // Décalage épaule par rapport à la caméra
         this.shoulderOffset = (this.data.side === 'left')
           ? new THREE.Vector3(-0.22, 1.36, 0.06)
           : new THREE.Vector3( 0.22, 1.36, 0.06);
         this.armEntity = this.el.querySelector('a-cylinder');
       },
       tick: function () {
-        // Main VR : position dans le monde
         var handObj = this.el.object3D;
         if (!handObj || !this.armEntity) return;
         var handWorld = new THREE.Vector3();
         handObj.getWorldPosition(handWorld);
 
-        // Epaule (relatif à la caméra)
         var camera = document.querySelector('[camera]');
         if (!camera) return;
         var camObj = camera.object3D;
@@ -106,12 +102,10 @@
         camObj.getWorldPosition(camWorld);
         var shoulderWorld = camWorld.clone().add(this.shoulderOffset);
 
-        // Calcul direction + distance épaule-main
         var dir = new THREE.Vector3().subVectors(handWorld, shoulderWorld);
         var dist = dir.length();
         var mid = new THREE.Vector3().addVectors(shoulderWorld, handWorld).multiplyScalar(0.5);
 
-        // Place le bras entre épaule et main (orientation et taille dynamiques)
         this.armEntity.object3D.position.copy(this.armEntity.parent.worldToLocal(mid.clone()));
         var arm = this.armEntity.object3D;
         arm.lookAt(this.armEntity.parent.worldToLocal(handWorld.clone()));
@@ -130,21 +124,17 @@
     device-orientation-permission-ui="enabled: true"
     background="color: #181818"
   >
-    <!-- Chargement des assets -->
     <a-assets>
       <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
-      <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
     </a-assets>
 
-    <!-- Main gauche VR + bras attractif -->
+    <!-- Mains et bras attractifs VR -->
     <a-entity
       laser-controls="hand: left"
       attractive-appendage="color: #00fff0; arm: true"
       attach-arm-to-shoulder="side: left"
       shadow="cast: true"
     ></a-entity>
-
-    <!-- Main droite VR + bras attractif -->
     <a-entity
       laser-controls="hand: right"
       attractive-appendage="color: #ff3cfb; arm: true"
@@ -152,25 +142,20 @@
       shadow="cast: true"
     ></a-entity>
 
-    <!-- Objet GLTF animé devant le joueur -->
+    <!-- Objet Motivator3000 (paramètres précis fournis) -->
     <a-entity
       gltf-model="#motivator-gltf"
-      scale="1.2 1.2 1.2"
-      position="0 1.5 -2"
-      shadow="cast: true; receive: true"
+      scale="5 5 5"
+      position="0 1.66025 1.5678"
+      rotation="89.99963750135457 0 0"
+      shadow
       animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
     ></a-entity>
 
     <!-- Lumière principale -->
     <a-light type="directional" intensity="1.2" position="2 6 2" castShadow="true"></a-light>
-
-    <!-- Caméra multiplateforme -->
-    <a-entity
-      camera
-      position="0 1.6 4"
-      look-controls="enabled: true; touchEnabled: true; mouseEnabled: true"
-      wasd-controls
-    ></a-entity>
+    <!-- Caméra -->
+    <a-entity camera position="0 1.6 4" look-controls wasd-controls></a-entity>
   </a-scene>
 </body>
 </html>
