@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Motivator 3D Viewer</title>
+    <meta name="viewport" content="width=800, initial-scale=1.0">
+    <!-- A-Frame core -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Optionally, add environment component for background -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+    <style>
+        body { background: #222; margin: 0; }
+        #sceneContainer { width: 800px; height: 450px; margin: 40px auto; }
+    </style>
+</head>
+<body>
+    <div id="sceneContainer">
+        <a-scene embedded environment="preset: forest; shadow: true; width: 800px; height: 450px;">
+            <a-assets>
+                <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
+                <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
+            </a-assets>
+            <a-entity 
+                gltf-model="#motivator-gltf"
+                scale="1 1 1"
+                position="0 0 0"
+                shadow="cast: true; receive: true">
+            </a-entity>
+            <a-light 
+                type="point"
+                position="1 3 2"
+                intensity="1"
+                color="#ffffff"
+                castShadow="true">
+            </a-light>
+            <a-entity camera 
+                orbit-controls="target: 0 1 0; minDistance: 1; maxDistance: 10; initialPosition: 0 2 5;">
+            </a-entity>
+        </a-scene>
+    </div>
+</body>
+</html>
