@@ -1,89 +1,94 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Motivator 3D - Gaming Environnement Multiplateforme</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
-    <style>
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            background: #181818;
-            overflow: hidden;
+  <meta charset="UTF-8">
+  <title>Scène A-Frame Corps Humain, Mains VR et GLTF</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+  <style>
+    html, body { height: 100%; width: 100%; margin: 0; overflow: hidden; background: #181818; }
+    a-scene { width: 100vw; height: 100vh; min-height: 360px; min-width: 320px; }
+  </style>
+  <script>
+    // Le corps suit la caméra, sauf la tête (pour VR)
+    AFRAME.registerComponent('avatar-body-follow', {
+      tick: function () {
+        var camera = document.querySelector('[camera]');
+        var body = this.el;
+        if (camera && body) {
+          var camPos = camera.object3D.position;
+          body.object3D.position.set(camPos.x, 0, camPos.z);
         }
-        #sceneContainer {
-            width: 100vw;
-            height: 100vh;
-            min-height: 360px;
-            min-width: 320px;
-            max-width: 100vw;
-            max-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-        a-scene {
-            width: 100vw !important;
-            height: 100vh !important;
-            min-height: 360px;
-            min-width: 320px;
-        }
-    </style>
+      }
+    });
+  </script>
 </head>
 <body>
-<div id="sceneContainer">
-    <a-scene
-        embedded
-        environment="preset: gaming; shadow: true;"
-        shadow="type: pcfsoft"
-        renderer="antialias: true"
-        vr-mode-ui="enabled: true"
-        device-orientation-permission-ui="enabled: true"
-    >
-        <a-assets>
-            <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
-            <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
-        </a-assets>
+  <a-scene
+    environment="preset: forest; shadow: true;"
+    shadow="type: pcfsoft"
+    renderer="antialias: true"
+    vr-mode-ui="enabled: true"
+    device-orientation-permission-ui="enabled: true"
+    background="color: #181818"
+  >
+    <a-assets>
+      <a-asset-item id="motivator-gltf" src="motivator3000/motivator.gltf"></a-asset-item>
+      <img id="motivator-texture" src="motivator3000/texture.png" crossorigin="anonymous">
+    </a-assets>
 
-        <!-- Objet 3D flottant avec animation verticale -->
-        <a-entity
-            gltf-model="#motivator-gltf"
-            scale="1.3 1.3 1.3"
-            position="0 1.5 0"
-            shadow="cast: true; receive: true"
-            animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 0; to: 0 2 0; loop: true"
-        ></a-entity>
+    <!-- Corps humain stylisé -->
+    <a-entity avatar-body-follow>
+      <!-- Torse -->
+      <a-cylinder height="0.8" radius="0.25" color="#ffe0b2" position="0 1.2 0" shadow="cast: true"></a-cylinder>
+      <!-- Tête -->
+      <a-sphere radius="0.22" color="#ffe0b2" position="0 1.75 0" shadow="cast: true"></a-sphere>
+      <!-- Bras gauche -->
+      <a-cylinder height="0.65" radius="0.09" color="#ffb74d" position="-0.33 1.32 0" rotation="0 0 38" shadow="cast: true"></a-cylinder>
+      <!-- Bras droit -->
+      <a-cylinder height="0.65" radius="0.09" color="#ffb74d" position="0.33 1.32 0" rotation="0 0 -38" shadow="cast: true"></a-cylinder>
+      <!-- Avant-bras gauche -->
+      <a-cylinder height="0.6" radius="0.08" color="#ffa726" position="-0.56 0.93 0" rotation="0 0 15" shadow="cast: true"></a-cylinder>
+      <!-- Avant-bras droit -->
+      <a-cylinder height="0.6" radius="0.08" color="#ffa726" position="0.56 0.93 0" rotation="0 0 -15" shadow="cast: true"></a-cylinder>
+      <!-- Cuisse gauche -->
+      <a-cylinder height="0.65" radius="0.11" color="#8d6e63" position="-0.13 0.53 0" rotation="0 0 5" shadow="cast: true"></a-cylinder>
+      <!-- Cuisse droite -->
+      <a-cylinder height="0.65" radius="0.11" color="#8d6e63" position="0.13 0.53 0" rotation="0 0 -5" shadow="cast: true"></a-cylinder>
+      <!-- Jambe gauche -->
+      <a-cylinder height="0.5" radius="0.09" color="#6d4c41" position="-0.13 0.13 0.02" shadow="cast: true"></a-cylinder>
+      <!-- Jambe droite -->
+      <a-cylinder height="0.5" radius="0.09" color="#6d4c41" position="0.13 0.13 0.02" shadow="cast: true"></a-cylinder>
+      <!-- Pieds -->
+      <a-sphere radius="0.09" color="#212121" position="-0.13 -0.13 0.21" shadow="cast: true"></a-sphere>
+      <a-sphere radius="0.09" color="#212121" position="0.13 -0.13 0.21" shadow="cast: true"></a-sphere>
+    </a-entity>
 
-        <!-- Lumière tournante autour de l'objet -->
-        <a-entity id="rotating-light" position="0 2.5 3" rotation="0 0 0">
-            <a-light
-                type="point"
-                intensity="1.2"
-                color="#fffbe6"
-                castShadow="true"
-                distance="24"
-                decay="2"
-            ></a-light>
-            <a-animation
-                attribute="rotation"
-                dur="6000"
-                to="0 360 0"
-                repeat="indefinite"
-                easing="linear"
-            ></a-animation>
-        </a-entity>
+    <!-- Main gauche VR -->
+    <a-entity hand-controls="hand: left" shadow="cast: true"></a-entity>
+    <!-- Main droite VR -->
+    <a-entity hand-controls="hand: right" shadow="cast: true"></a-entity>
 
-        <!-- Caméra compatible desktop/mobile/VR -->
-        <a-entity
-            camera
-            position="0 1.7 5"
-            look-controls="enabled: true; touchEnabled: true; mouseEnabled: true"
-            orbit-controls="target: 0 1.7 0; minDistance: 3; maxDistance: 10; initialPosition: 0 1.7 5; enableDamping: true; dampingFactor: 0.08; rotateSpeed:0.4"
-        ></a-entity>
-    </a-scene>
-</div>
+    <!-- Objet GLTF importé -->
+    <a-entity
+      gltf-model="#motivator-gltf"
+      scale="1.2 1.2 1.2"
+      position="0 1.5 -2"
+      shadow="cast: true; receive: true"
+      animation="property: position; dir: alternate; dur: 2200; easing: easeInOutSine; from: 0 1.5 -2; to: 0 2 -2; loop: true"
+    ></a-entity>
+
+    <!-- Lumière principale -->
+    <a-light type="directional" intensity="1.2" position="2 6 2" castShadow="true"></a-light>
+
+    <!-- Caméra multiplateforme -->
+    <a-entity
+      camera
+      position="0 1.6 4"
+      look-controls="enabled: true; touchEnabled: true; mouseEnabled: true"
+      wasd-controls
+    ></a-entity>
+  </a-scene>
 </body>
 </html>
